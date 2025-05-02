@@ -1,40 +1,40 @@
-const body = document.body
-const slides = document.querySelectorAll('.slide')
-const leftBtn = document.getElementById('left')
-const rightBtn = document.getElementById('right')
+const nums = document.querySelectorAll('.nums span')
+const counter = document.querySelector('.counter')
+const finalMessage = document.querySelector('.final')
+const replay = document.querySelector('#replay')
 
-let activeSlide = 0
+runAnimation()
 
-rightBtn.addEventListener('click', () => {
-  activeSlide++
+function resetDOM() {
+  counter.classList.remove('hide')
+  finalMessage.classList.remove('show')
 
-  if (activeSlide > slides.length - 1) {
-    activeSlide = 0
-  }
+  nums.forEach((num) => {
+    num.classList.value = ''
+  })
 
-  setBgToBody()
-  setActiveSlide()
-})
-
-leftBtn.addEventListener('click', () => {
-  activeSlide--
-
-  if (activeSlide < 0) {
-    activeSlide = slides.length - 1
-  }
-
-  setBgToBody()
-  setActiveSlide()
-})
-
-setBgToBody()
-
-function setBgToBody() {
-  body.style.backgroundImage = slides[activeSlide].style.backgroundImage
+  nums[0].classList.add('in')
 }
 
-function setActiveSlide() {
-  slides.forEach((slide) => slide.classList.remove('active'))
+function runAnimation() {
+  nums.forEach((num, idx) => {
+    const nextToLast = nums.length - 1
 
-  slides[activeSlide].classList.add('active')
+    num.addEventListener('animationend', (e) => {
+      if (e.animationName === 'goIn' && idx !== nextToLast) {
+        num.classList.remove('in')
+        num.classList.add('out')
+      } else if (e.animationName === 'goOut' && num.nextElementSibling) {
+        num.nextElementSibling.classList.add('in')
+      } else {
+        counter.classList.add('hide')
+        finalMessage.classList.add('show')
+      }
+    })
+  })
 }
+
+replay.addEventListener('click', () => {
+  resetDOM()
+  runAnimation()
+})
